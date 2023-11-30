@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Search</title>
+    <link rel="stylesheet" href="./styles.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="./app.js" defer></script>
+</head>
+
+<body>
+    <div id="home-page">
+
+        <div id="header">
+            <h1>Job Search Website</h1>
+        </div>
+
+        <form id="search">
+            <input type="text" name="search">
+            <select name="categories" id="categories">
+                <option value="no-selection"></option>
+                <option value="accounting-finance-jobs">Accounting & Finance Jobs</option>
+                <option value="it-jobs">IT Jobs</option>
+                <option value="sales-jobs">Sales Jobs</option>
+                <option value="customer-services-jobs">Customer Services Jobs</option>
+                <option value="engineering-jobs">Engineering Jobs</option>
+                <option value="hr-jobs">HR & Recruitment Jobs</option>
+                <option value="healthcare-nursing-jobs">Healthcare & Nursing Jobs</option>
+                <option value="hospitality-catering-jobs">Hospitality & Catering Jobs</option>
+                <option value="pr-advertising-marketing-jobs">PR, Advertising & Marketing Jobs</option>
+                <option value="logistics-warehouse-jobs">Logistics & Warehouse Jobs</option>
+                <option value="teaching-jobs">Teaching Jobs</option>
+                <option value="trade-construction-jobs">Trade & Construction Jobs</option>
+                <option value="admin-jobs">Admin Jobs</option>
+                <option value="legal-jobs">Legal Jobs</option>
+                <option value="creative-design-jobs">Creative & Design Jobs</option>
+                <option value="graduate-jobs">Graduate Jobs</option>
+                <option value="retail-jobs">Retail Jobs</option>
+                <option value="consultancy-jobs">Consultancy Jobs</option>
+                <option value="manufacturing-jobs">Manufacturing Jobs</option>
+                <option value="scientific-qa-jobs">Scientific & QA Jobs</option>
+                <option value="social-work-jobs">Social work Jobs</option>
+                <option value="travel-jobs">Travel Jobs</option>
+                <option value="energy-oil-gas-jobs">Energy, Oil & Gas Jobs</option>
+                <option value="property-jobs">Property Jobs</option>
+                <option value="charity-voluntary-jobs">Charity & Voluntary Jobs</option>
+                <option value="domestic-help-cleaning-jobs">Domestic help & Cleaning Jobs</option>
+                <option value="maintenance-jobs">Maintenance Jobs</option>
+                <option value="part-time-jobs">Part time Jobs</option>
+                <option value="other-general-jobs">Other/General Jobs</option>
+                <option value="unknown">Unknown</option>
+            </select>
+            <label for="categories">Choose Category</label>
+        </form>
+
+        <button type="submit" id="submit">Search</button>
+
+        <div id="job-results">
+            <span class="job">
+                <h3 class="company-name">Company Name</h3>
+                <h2 class="job-title">Job Title</h2>
+                <div class="job-description">
+                    <em>Job Description</em>
+                    <p>
+                        Words that describe the job...
+                    </p>
+                </div>
+                <a href="https://www.adzuna.com/details/4418560514?se=FsgtFAuP7hGjR0334f7yuQ&utm_medium=api&utm_source=e7b64108&v=E68B804DA2797258B8626B1E45D2EC6FB0B21C89">Job Link</a>
+            </span>
+        </div>
+
+    </div>
+</body>
+
+</html>
