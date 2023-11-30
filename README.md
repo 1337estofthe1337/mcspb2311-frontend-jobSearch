@@ -17,4 +17,4 @@ The user input and dropdown menu will use an Event Handler.
 I will need to create an AJAX request to receive the jobs information from the jobs database both when the site is initially loaded, and when a user specifies options from the dropdown menu.
 
 # What API will your app be using?
-juju API https://www.juju.com/publisher/spec/
+Arbeitnow API https://documenter.getpostman.com/view/18545278/UVJbJdKh
