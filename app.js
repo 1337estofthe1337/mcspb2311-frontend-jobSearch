@@ -129,34 +129,48 @@ month (undefined, optional): A series of average salary values, by month, for al
 */
 var history; // extra
 
-var page = [1]; // event listener to go to next page
+var page = 1; // event listener to go to next page
 
 // this part of the URL doesn't change
 const beginningURL = `https://api.adzuna.com/v1/api/jobs/`;
 
-var url = `${beginningURL}${country.us}/search/${page[0]}?${api.id}&${api.key}&results_per_page=50`
+var url = `${beginningURL}${country.us}/search/${page}?${api.id}&${api.key}&results_per_page=50`;
 
-$('#submit').on('click', (e) => {
-    e.preventDefault();
-    // Gets user input as string and places %20 between multiple words (URL requires this)
-    let search = $('input').val().split(' ').join('%20');
+function onRequest(setURL) {
 
-    let category = $('select').val();
-
-    if (category === "no-selection") {
-        category = '';
-    }
-
-    var url = `${beginningURL}${country.us}/search/${page[0]}?${api.id}&${api.key}&results_per_page=50&what=${search}&category=${category}`;
-
-    $.get(url, (data) => {
+    $.get(setURL, (data) => {
+        
         console.log(data.results);
+        console.log(`page number = ${page}`);
+        console.log(setURL);
+
         $('#job-results').empty();
 
         for (let jobIndex = 0; jobIndex < data.results.length; ++jobIndex) {
 
             // I know this part works
             const companyName = data.results[jobIndex].company.display_name;
+
+            if (data.results[jobIndex].salary_min === undefined) {
+                let salary = '';
+            }
+            else if (data.results[jobIndex].salary_min === data.results[jobIndex].salary_max) {
+                salary = (data.results[jobIndex].salary_min).toLocaleString("en-US");
+            }
+            else {
+                let salary = `${(data.results[jobIndex].salary_min).toLocaleString("en-US")} - ${(data.results[jobIndex].salary_max).toLocaleString("en-US")}`;
+            }
+
+            let contractTime = data.results[jobIndex].contract_time;
+            if (contractTime === 'full_time') {
+                contractTime = 'Full-time';
+            }
+            else if (contractTime === 'part_time') {
+                contractTime = 'Part-time';
+            }
+            else {
+                contractTime = ``;
+            }
             const department = data.results[jobIndex].category.label;
             const jobTitle = data.results[jobIndex].title;
             const jobDescription = data.results[jobIndex].description;
@@ -173,51 +187,86 @@ $('#submit').on('click', (e) => {
                 "margin": "10px"
             });
             const $spanh2 = $('<h2></h2>').attr('class', 'company-name').text(companyName);
-            const $spanh4 = $('<h4></h4>').attr('class', 'department').text(department);
+            const $spanh4 = $('<h4></h4>').attr('class', 'department').text(`${contractTime}  |  $${salary}  |  ${department}`);
             const $spanh3 = $('<h3></h3>').attr('class', 'job-title').text(jobTitle);
             const $spandiv = $('<div></div>').attr('class', 'job-description').text(jobDescription);
-            const $spana = $('<a></a>').attr('href', link).text('Job Link');
+            const $spana = $('<a></a>').attr({
+                'href': link,
+                'target': '_blank'
+            }).text('Read More');
             
             $span.append($spanh2).append($spanh4).append($spanh3).append($spandiv).append($spana);
             
             $('#job-results').append($span);
         }
-    })
-})
 
+        
+        let $previousButton = $('<a></a>').attr({
+            'href': '#',
+            'class': 'previous'
+        }).text('Previous').css({
+            "display": "inline-block",
+            "padding": "8px 16px",
+            "float": "left",
+            "width": "39%"
+        })
+        
+        let $nextButton = $('<a></a>').attr({
+            'href': '#',
+            'class': 'next'
+        }).text('Next').css({
+            "display": "inline-block",
+            "padding": "8px 16px",
+            "float": "left",
+            "width": "39%"
+        })
+        
+        $('#job-results').append($previousButton);
+        $('#job-results').append($nextButton);
+        
+        $('.previous').on("click", () => {
+            if (page === 1) {
+                return;
+            }
+        });
+        
+        $('.next').on("click", () => {
+            page += 1;
+            let search = $('input').val().split(' ').join('%20');
+
+            let category = $('select').val();
+
+            if (category === "no-selection") {
+                category = '';
+            }
+
+            var url = `${beginningURL}${country.us}/search/${page}?${api.id}&${api.key}&results_per_page=50&what=${search}&category=${category}`;
+            onRequest(url);
+        });
+    })
+}
 
 // testing
-$.get(url, (data) => {
-    console.log(data.results);
-    $('#job-results').empty();
+var onSubmit = $('#submit').on('click', (e) => {
+    e.preventDefault();
+    page = 1;
+    // Gets user input as string and places %20 between multiple words (URL requires this)
+    let search = $('input').val().split(' ').join('%20');
 
-    for (let jobIndex = 0; jobIndex < data.results.length; ++jobIndex) {
+    let category = $('select').val();
 
-        // I know this part works
-        const companyName = data.results[jobIndex].company.display_name;
-        const department = data.results[jobIndex].category.label;
-        const jobTitle = data.results[jobIndex].title;
-        const jobDescription = data.results[jobIndex].description;
-        const link = data.results[jobIndex].redirect_url;
-
-        // need to make a variable that holds the dom elements before appending
-        const $span = $('<span></span>').attr('class', 'job').css({
-            "display": "block",
-            "border": "2px solid black",
-            "box-sizing": "border-box",
-            "padding": "4px",
-            "width": "80vw",
-            "height": "fit-content",
-            "margin": "10px"
-        });
-        const $spanh2 = $('<h2></h2>').attr('class', 'company-name').text(companyName);
-        const $spanh4 = $('<h4></h4>').attr('class', 'department').text(department);
-        const $spanh3 = $('<h3></h3>').attr('class', 'job-title').text(jobTitle);
-        const $spandiv = $('<div></div>').attr('class', 'job-description').text(jobDescription);
-        const $spana = $('<a></a>').attr('href', link).text('Job Link');
-        
-        $span.append($spanh2).append($spanh4).append($spanh3).append($spandiv).append($spana);
-        
-        $('#job-results').append($span);
+    if (category === "no-selection") {
+        category = '';
     }
+
+    var url = `${beginningURL}${country.us}/search/${page}?${api.id}&${api.key}&results_per_page=50&what=${search}&category=${category}`;
+
+    onRequest(url);
 })
+        
+onRequest(url);
+
+function makeGraph() {
+    var container;
+    var labels;
+}
