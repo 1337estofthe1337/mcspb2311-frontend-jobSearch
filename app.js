@@ -140,28 +140,35 @@ function onRequest(setURL) {
 
     $.get(setURL, (data) => {
         
-        console.log(data.results);
+        console.log(data);
         console.log(`page number = ${page}`);
         console.log(setURL);
 
         $('#job-results').empty();
 
-        for (let jobIndex = 0; jobIndex < data.results.length; ++jobIndex) {
+        data.results.forEach( (job) => {
 
             // I know this part works
-            const companyName = data.results[jobIndex].company.display_name;
+            const companyName = job.company.display_name;
 
-            if (data.results[jobIndex].salary_min === undefined) {
-                let salary = '';
+            let salary = ''
+            if (job.salary_min === undefined && job.salary_max === undefined) {
+                salary = '';
             }
-            else if (data.results[jobIndex].salary_min === data.results[jobIndex].salary_max) {
-                salary = (data.results[jobIndex].salary_min).toLocaleString("en-US");
+            else if (job.salary_min === job.salary_max) {
+                salary = (job.salary_min).toLocaleString("en-US");
+            }
+            else if (job.salary_min) {
+                salary = (job.salary_min).toLocaleString("en-US");
+            }
+            else if (job.salary_max) {
+                salary = (job.salary_max).toLocaleString("en-US");
             }
             else {
-                let salary = `${(data.results[jobIndex].salary_min).toLocaleString("en-US")} - ${(data.results[jobIndex].salary_max).toLocaleString("en-US")}`;
+                salary = `${(job.salary_min).toLocaleString("en-US")} - ${(job.salary_max).toLocaleString("en-US")}`;
             }
 
-            let contractTime = data.results[jobIndex].contract_time;
+            let contractTime = job.contract_time;
             if (contractTime === 'full_time') {
                 contractTime = 'Full-time';
             }
@@ -171,10 +178,11 @@ function onRequest(setURL) {
             else {
                 contractTime = ``;
             }
-            const department = data.results[jobIndex].category.label;
-            const jobTitle = data.results[jobIndex].title;
-            const jobDescription = data.results[jobIndex].description;
-            const link = data.results[jobIndex].redirect_url;
+
+            const department = job.category.label;
+            const jobTitle = job.title;
+            const jobDescription = job.description;
+            const link = job.redirect_url;
 
             // need to make a variable that holds the dom elements before appending
             const $span = $('<span></span>').attr('class', 'job').css({
@@ -186,10 +194,12 @@ function onRequest(setURL) {
                 "height": "fit-content",
                 "margin": "10px"
             });
+
             const $spanh2 = $('<h2></h2>').attr('class', 'company-name').text(companyName);
             const $spanh4 = $('<h4></h4>').attr('class', 'department').text(`${contractTime}  |  $${salary}  |  ${department}`);
             const $spanh3 = $('<h3></h3>').attr('class', 'job-title').text(jobTitle);
             const $spandiv = $('<div></div>').attr('class', 'job-description').text(jobDescription);
+
             const $spana = $('<a></a>').attr({
                 'href': link,
                 'target': '_blank'
@@ -198,7 +208,7 @@ function onRequest(setURL) {
             $span.append($spanh2).append($spanh4).append($spanh3).append($spandiv).append($spana);
             
             $('#job-results').append($span);
-        }
+        })
 
         
         let $previousButton = $('<a></a>').attr({
@@ -222,25 +232,48 @@ function onRequest(setURL) {
         })
         
         $('#job-results').append($previousButton);
+        if (page === 1) {
+            $('.previous').hide();
+        }
+
         $('#job-results').append($nextButton);
+        if (data.results.length < 50) {
+            $('.next').hide();
+        }
         
         $('.previous').on("click", () => {
-            if (page === 1) {
-                return;
-            }
-        });
-        
-        $('.next').on("click", () => {
-            page += 1;
+
+            $('.next').show();
+
+            --page;
+
             let search = $('input').val().split(' ').join('%20');
 
             let category = $('select').val();
-
             if (category === "no-selection") {
                 category = '';
             }
 
             var url = `${beginningURL}${country.us}/search/${page}?${api.id}&${api.key}&results_per_page=50&what=${search}&category=${category}`;
+            
+            onRequest(url);
+        });
+        
+        $('.next').on("click", () => {
+
+            $('.previous').show();
+
+            ++page;
+
+            let search = $('input').val().split(' ').join('%20');
+
+            let category = $('select').val();
+            if (category === "no-selection") {
+                category = '';
+            }
+
+            var url = `${beginningURL}${country.us}/search/${page}?${api.id}&${api.key}&results_per_page=50&what=${search}&category=${category}`;
+            
             onRequest(url);
         });
     })
@@ -265,8 +298,3 @@ var onSubmit = $('#submit').on('click', (e) => {
 })
         
 onRequest(url);
-
-function makeGraph() {
-    var container;
-    var labels;
-}
